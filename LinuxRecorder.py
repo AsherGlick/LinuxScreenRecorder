@@ -21,7 +21,7 @@ if (sys.argv[1] == 'record'):
     gameAudio = subprocess.Popen("parec --device secondrecord.monitor | lame -r - "+targetDir+"/GameAudio.mp3", shell=True)
     tspeakAudio = subprocess.Popen("parec --device firstrecord.monitor | lame -r - "+targetDir+"/ChatAudio.mp3", shell=True)
     microphoneAudio = subprocess.Popen("parec --device alsa_input.usb-Blue_Microphones_Yeti_Stereo_Microphone_REV8-00-Microphone.iec958-stereo | lame -r - "+targetDir+"/MicrophoneAudio.mp3", shell=True)
-    gameVideo = subprocess.Popen("avconv -framerate 30 -video_size 1920x1080 -f x11grab -i :0.0 -vcodec libx264 -crf 0 -preset ultrafast "+targetDir+"/Game.avi", shell=True)
+    gameVideo = subprocess.Popen("avconv -framerate 30 -video_size 1920x1080 -f x11grab -i :0.0 -vcodec libx264 -crf 0 -preset ultrafast "+targetDir+"/Game.mp4", shell=True)
 
     # handle the interrupt that the user sends to stop recording
     def signal_handler(interrupt, frame):

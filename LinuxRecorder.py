@@ -8,6 +8,13 @@ import sys
 
 audioChannels = ['Game', 'Chat']
 
+# Valid sample rates are 8, 11.025, 12, 16, 22.05, 24, 32, 44.1, and 48
+audioSampleKilorate = 48
+audioSampleRate = audioSampleKilorate * 1000
+
+# The pulse audio device name of the microphone to record
+microphoneDeviceName = "alsa_input.usb-Blue_Microphones_Yeti_Stereo_Microphone_REV8-00-Microphone.iec958-stereo"
+
 
 # If there are no arguments included in the command print out the possible arguments
 if (len(sys.argv) < 2):
@@ -25,9 +32,12 @@ if (sys.argv[1] == 'record'):
     # Begin Recording all the different inputs
     audioRecordingProcesses = {};
     for audioChannel in audioChannels:
-        audioRecordingProcesses[audioChannel] = subprocess.Popen("parec --device "+audioChannel+"Record.monitor | lame -r - "+targetDir+"/"+audioChannel+"Audio.mp3", shell=True)
+        softwareAudioCommand = "parec --rate %d --device %s | lame -r -s %d - %s/%sAudio.mp3" % (audioSampleRate, audioChannel+"Record.monitor", audioSampleKilorate, targetDir, audioChannel)
+        audioRecordingProcesses[audioChannel] = subprocess.Popen(softwareAudioCommand, shell=True)
 
-    microphoneAudio = subprocess.Popen("parec --device alsa_input.usb-Blue_Microphones_Yeti_Stereo_Microphone_REV8-00-Microphone.iec958-stereo | lame -r - "+targetDir+"/MicrophoneAudio.mp3", shell=True)
+    microphoneAudioCommand = "parec --rate %d --device %s | lame -r -s %d - %s/%sAudio.mp3" % (audioSampleRate, microphoneDeviceName, audioSampleKilorate, targetDir, "Microphone")
+    microphoneAudio = subprocess.Popen(microphoneAudioCommand, shell=True)
+
     gameVideo = subprocess.Popen("avconv -r 30 -video_size 1920x1080 -f x11grab -i :0.0 -vcodec libx264 -crf 25 -preset ultrafast "+targetDir+"/Game.mp4", shell=True)
 
     # handle the interrupt that the user sends to stop recording

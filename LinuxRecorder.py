@@ -38,7 +38,7 @@ if (sys.argv[1] == 'record'):
     microphoneAudioCommand = "parec --rate %d --device %s | lame -r -s %d - %s/%sAudio.mp3" % (audioSampleRate, microphoneDeviceName, audioSampleKilorate, targetDir, "Microphone")
     microphoneAudio = subprocess.Popen(microphoneAudioCommand, shell=True)
 
-    gameVideo = subprocess.Popen("avconv -r 30 -video_size 1920x1080 -f x11grab -i :0.0 -vcodec libx264 -crf 25 -preset ultrafast "+targetDir+"/Game.mp4", shell=True)
+    gameVideo = subprocess.Popen("avconv -video_size 1920x1080 -framerate 30 -f x11grab -i :0.0 -vcodec libx264 -qp 0 -preset ultrafast "+targetDir+"/Game.mp4", shell=True)
 
     # handle the interrupt that the user sends to stop recording
     def signal_handler(interrupt, frame):

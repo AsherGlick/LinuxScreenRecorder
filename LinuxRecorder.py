@@ -4,6 +4,7 @@ import subprocess
 import time
 import signal
 import sys
+import os
 
 
 audioChannels = ['Game', 'Chat']
@@ -15,16 +16,18 @@ audioSampleRate = audioSampleKilorate * 1000
 # The pulse audio device name of the microphone to record
 microphoneDeviceName = "alsa_input.usb-Blue_Microphones_Yeti_Stereo_Microphone_REV8-00-Microphone.iec958-stereo"
 
+# Destination Folder
+destinationFolder = '.'
 
 # If there are no arguments included in the command print out the possible arguments
 if (len(sys.argv) < 2):
-    print "Use the arguments\n  configure\n  record"
+    print "Use the arguments\n  configure - configure pulse audio channels\n  record - Record the screen"
     quit()
 
 # If we are supposed to begin recording start recording
 if (sys.argv[1] == 'record'):
     # Set the to the current date and time to avoid as much overlap as possible
-    targetDir = time.strftime("%Y%m%d_%H%M%S")
+    targetDir = os.path.join(destinationFolder, time.strftime("%Y%m%d_%H%M%S"))
 
     # create the folder for all the files to be saved in for this recording
     subprocess.call(['mkdir', '-p', targetDir], shell=False)
@@ -38,7 +41,7 @@ if (sys.argv[1] == 'record'):
     microphoneAudioCommand = "parec --rate %d --device %s | lame -r -s %d - %s/%sAudio.mp3" % (audioSampleRate, microphoneDeviceName, audioSampleKilorate, targetDir, "Microphone")
     microphoneAudio = subprocess.Popen(microphoneAudioCommand, shell=True)
 
-    gameVideo = subprocess.Popen("avconv -video_size 1920x1080 -framerate 30 -f x11grab -i :0.0 -vcodec libx264 -qp 0 -preset ultrafast "+targetDir+"/Game.mp4", shell=True)
+    gameVideo = subprocess.Popen("avconv -video_size 1920x1080 -f x11grab -i :0.0 -vcodec libx264 -qp 0 -preset ultrafast "+targetDir+"/Game.mp4", shell=True)
 
     # handle the interrupt that the user sends to stop recording
     def signal_handler(interrupt, frame):
